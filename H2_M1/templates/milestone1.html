@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{%block content%}
+<div class="container">
+  <div class="row">
+
+    <div class="col-12">
+      <br>
+      <h3>Milestone-1:</h3>
+      <p>Image to Poem Generator.</p>
+    </div>
+
+    <div class="col-5">
+      <form action="{{ url_for('interaction_1')}}" method="post" enctype="multipart/form-data">
+          <label for="formFile" class="form-label">Upload Image:</label>
+          <input class="form-control" id="formFile" type="file" name="imgFile">
+          <br>
+          <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <br>
+      <img src="{% if imgPath %} {{imgPath}} {%endif %}" class="rounded mx-auto d-block img-fluid">
+      <br>
+      <p>{%if caption%}{{caption}} {%else%}Waiting for image processing & caption...{%endif %}</p>
+    </div>
+
+    <div class="col-1">
+      <br>
+    </div>
+
+    <div class="col-6" >
+      <div class="d-flex justify-content-center" id="canvas-div" data-story="{% if imgPath %} {{story}} {% else %}Waiting for the poem...{%endif %}">
+      </div>
+      <br>
+      <div class="row">
+          <div class="col-6 text-center" id="startBtnDiv">
+              <!-- <button type="button" class="btn btn-primary" id="startBtn">Start Narrating!</button> -->
+          </div>
+          <div class="col-6 text-center" id="stopBtnDiv">
+              <!-- <button type="button" class="btn btn-danger" id="stopBtn">Stop Narrating!</button> -->
+          </div>
+      </div>
+    </div>   
+
+  </div>
+</div>
+<script src="js/sketch-m1.js"></script>
+{%endblock%}
