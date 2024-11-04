@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{%block content%}
+<div class="container">
+    <br>
+    <div class="row">
+        <div class="col-5">
+            <form action="{{ url_for('interaction_2')}}" method="post" enctype="multipart/form-data">
+                <label for="formFile" class="form-label">Upload Image:</label>
+                <input class="form-control" id="formFile" type="file" name="imgFile">
+                <br>
+
+                <legend class="col-form-label">Select Story Genre:</legend>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio1" value="Horror" checked>
+                    <label class="form-check-label" for="inlineRadio1">Horror</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio2" value="Fantasy">
+                    <label class="form-check-label" for="inlineRadio2">Fantasy</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio3" value="Adventure">
+                    <label class="form-check-label" for="inlineRadio3">Adventure</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio4" value="Comedy">
+                    <label class="form-check-label" for="inlineRadio1">Comedy</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio5" value="Mystery">
+                    <label class="form-check-label" for="inlineRadio2">Mystery</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio6" value="Romance">
+                    <label class="form-check-label" for="inlineRadio3">Romance</label>
+                </div>
+                <br>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <br>
+            <img src="{% if imgPath %} {{imgPath}} {%endif %}" class="rounded mx-auto d-block img-fluid" style="max-width: 70%">
+            <br>
+            <p class="text-center alert alert-secondary" style="text-transform: capitalize">{%if caption%}Generated Caption: {{caption}} {%else%}Waiting for image processing & caption...{%endif %}</p>
+        </div>
+
+        <div class="col-1">
+            <br>
+        </div>
+        
+        <div class="col-6" >
+            <div class="d-flex justify-content-center" id="canvas-div" data-story="{% if imgPath %} {{story}} {% else %}Waiting for the story...{%endif %}" data-style={{style}}>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6 text-center" id="startBtnDiv">
+                    <!-- <button type="button" class="btn btn-primary" id="startBtn">Start Narrating!</button> -->
+                </div>
+                <div class="col-6 text-center" id="stopBtnDiv">
+                    <!-- <button type="button" class="btn btn-danger" id="stopBtn">Stop Narrating!</button> -->
+                </div>
+            </div>
+            
+        </div>   
+    </div>
+    
+</div>
+<script src="js/sketch-m2.js"></script>
+{%endblock%}
