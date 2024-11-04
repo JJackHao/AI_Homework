@@ -1,8 +1,23 @@
 {% extends "base.html" %}
 {%block content%}
 <div class="container">
-    <br>
     <div class="row">
+
+        <div class="col-12">
+            <br>
+            <h3>Milestone-2:</h3>
+            <p>Image to Chinese Poem Generator.</p>
+            <p>Classical Poetry (古体诗), or guti shi, is known for its flexible form and powerful expression. With fewer restrictions on structure, it allows poets to create lengthy verses that can convey complex stories or profound emotions, making it ideal for grand or philosophical themes.</p>
+            <p>Five-character Regulated Verse (五言律诗), a staple of Tang Dynasty poetry, adheres to strict rhythmic and tonal rules. Its concise elegance makes it perfect for capturing serene landscapes or delicate emotions in a refined, balanced manner.</p>
+            <p>Seven-Character Regulated Verse (七言律诗) has a majestic and flowing quality with seven characters per line. Known for its formal structure and grand tone, it suits the depiction of vast natural scenes or the expression of a heroic and expansive spirit.</p>
+            <p>Five-Character Quatrain (五言绝句) consists of just four lines, each with five characters, allowing for profound simplicity. Ideal for conveying small, beautiful moments or natural scenes, it captures an entire world within a few words.</p>
+            <p>Seven-Character Quatrain (七言绝句) allows for a more layered emotional expression, slightly longer than the five-character version. It is often used for themes of longing or farewell, where a sense of nostalgia or celebration is needed.</p>
+            <p>Ci (Song Lyric Poetry, 宋词) varies in line length, set to specific tunes or patterns. With its flowing, song-like quality, ci is ideal for expressing personal emotions, like love, nostalgia, and introspection, creating a deeply emotional connection.</p>
+            <p>Qu (Yuan Verse, 元曲) is known for its direct and vibrant language originating in the Yuan Dynasty. Often associated with bold, expressive themes, it’s suitable for scenes of adventure or intensity, capturing emotions with a free and spirited style.</p>
+            <p>Yuefu (乐府), originally folk songs collected by the imperial music bureau, has a storytelling quality that reflects common life and emotions. It’s perfect for depicting rural landscapes, social themes, and scenes from everyday life with a folk-style simplicity.</p>
+            <br>
+        </div>
+
         <div class="col-5">
             <form action="{{ url_for('interaction_2')}}" method="post" enctype="multipart/form-data">
                 <label for="formFile" class="form-label">Upload Image:</label>
@@ -11,28 +26,36 @@
 
                 <legend class="col-form-label">Select Story Genre:</legend>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio1" value="Horror" checked>
-                    <label class="form-check-label" for="inlineRadio1">Horror</label>
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio1" value="Classical-Poetry" checked>
+                    <label class="form-check-label" for="inlineRadio1">Classical Poetry</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio2" value="Fantasy">
-                    <label class="form-check-label" for="inlineRadio2">Fantasy</label>
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio2" value="Five-Character-Regulated-Verse">
+                    <label class="form-check-label" for="inlineRadio2">Five-Character Regulated Verse</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio3" value="Adventure">
-                    <label class="form-check-label" for="inlineRadio3">Adventure</label>
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio3" value="Seven-Character-Regulated-Verse">
+                    <label class="form-check-label" for="inlineRadio3">Seven-Character Regulated Verse</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio4" value="Comedy">
-                    <label class="form-check-label" for="inlineRadio1">Comedy</label>
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio4" value="Five-Character-Quatrain">
+                    <label class="form-check-label" for="inlineRadio1">Five-Character Quatrain</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio5" value="Mystery">
-                    <label class="form-check-label" for="inlineRadio2">Mystery</label>
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio5" value="Seven-Character-Quatrain">
+                    <label class="form-check-label" for="inlineRadio2">Seven-Character Quatrain</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio6" value="Romance">
-                    <label class="form-check-label" for="inlineRadio3">Romance</label>
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio6" value="Song-Lyric-Poetry">
+                    <label class="form-check-label" for="inlineRadio3">Song Lyric Poetry</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio7" value="Yuan-Verse">
+                    <label class="form-check-label" for="inlineRadio3">Yuan Verse</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="storyRadioOptions" id="inlineRadio8" value="Yuefu">
+                    <label class="form-check-label" for="inlineRadio3">Yuefu</label>
                 </div>
                 <br>
 
@@ -49,7 +72,7 @@
         </div>
         
         <div class="col-6" >
-            <div class="d-flex justify-content-center" id="canvas-div" data-story="{% if imgPath %} {{story}} {% else %}Waiting for the story...{%endif %}" data-style={{style}}>
+            <div class="d-flex justify-content-center" id="canvas-div" data-story="{% if imgPath %} {{story}} {% else %}Waiting for the poem...{%endif %}" data-style={{style}}>
             </div>
             <br>
             <div class="row">
@@ -60,7 +83,7 @@
                     <!-- <button type="button" class="btn btn-danger" id="stopBtn">Stop Narrating!</button> -->
                 </div>
             </div>
-            
+            <br>
         </div>   
     </div>
     

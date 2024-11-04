@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
 from model_milestone1 import runModels
+from model_milestone2 import runModels_langchain, runModels_langchain_RAG
+
 import os
 from werkzeug.utils import secure_filename
-from model_milestone2 import runModels_langchain, runModels_langchain_RAG
 
 load_dotenv()
 
@@ -41,13 +42,13 @@ def interaction_2():
         img_path = 'imgs/'+file_name
         f.save(upld_path)
 
-        db_dir = os.path.join(cwd,"chroma_db")
+        # db_dir = os.path.join(cwd,"chroma_db")
 
         story_style = request.form.get('storyRadioOptions')
         # print(f"the story style selcted is {story_style}")
 
-        # (caption, story) = runModels_langchain(upld_path,story_style)
-        (caption, story) = runModels_langchain_RAG(upld_path,story_style,db_dir)
+        (caption, story) = runModels_langchain(upld_path,story_style)
+        # (caption, story) = runModels_langchain_RAG(upld_path,story_style,db_dir)
 
         
 

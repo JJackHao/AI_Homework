@@ -5,16 +5,16 @@ let slectedImg, horrorImg, fantasyImg, adventureImg, comedyImg, mysteryImg, roma
 let img_is_selected = false;
 
 
-function preload(){
-    horrorImg = loadImage("imgs/horror.jpg"); 
-    fantasyImg = loadImage("imgs/fantasy.jpg"); 
-    adventureImg = loadImage("imgs/adventure.jpg"); 
-    comedyImg = loadImage("imgs/comedy.jpg"); 
-    mysteryImg = loadImage("imgs/mystery.jpg"); 
-    romanceImg = loadImage("imgs/romance.jpg"); 
-    // slectedImg = horrorImg ;
-    // story_style = "Horror";
-}
+// function preload(){
+//     horrorImg = loadImage("imgs/horror.jpg"); 
+//     fantasyImg = loadImage("imgs/fantasy.jpg"); 
+//     adventureImg = loadImage("imgs/adventure.jpg"); 
+//     comedyImg = loadImage("imgs/comedy.jpg"); 
+//     mysteryImg = loadImage("imgs/mystery.jpg"); 
+//     romanceImg = loadImage("imgs/romance.jpg"); 
+//     // slectedImg = horrorImg ;
+//     // story_style = "Horror";
+// }
 
 
 function setup(){
@@ -50,7 +50,7 @@ function draw(){
 
     story_text = divData.dataset.story;
 
-    display_text = "Story style: "+story_style+"\n"+"\n"+story_text
+    display_text = "Poem style: "+story_style+"\n"+"\n"+story_text
 
     if(img_is_selected ===true){
         tint(95,95,95, 255);
@@ -69,68 +69,71 @@ function draw(){
 
 
 function startSpeaking(){
-    if(story_text !== "Waiting for the story..."){
+    if(story_text !== "Waiting for the poem..."){
+        speech.speak(story_text);
+        // if(story_style === "Horror"){
+        //     slectedImg = horrorImg;
+        //     img_is_selected = true;
+        //     speech.setVoice(0);
+        //     speech.setPitch(0.01);
+        //     speech.setRate(0.5);
+        //     speech.speak(story_text);
+        // }
+        // else if(story_style === "Fantasy"){
+        //     slectedImg = fantasyImg;
+        //     img_is_selected = true;
+        //     speech.setVoice(1);
+        //     speech.setPitch(1);
+        //     speech.setRate(1);
+        //     speech.speak(story_text);
+        // }
+        // else if(story_style === "Adventure"){
+        //     slectedImg = adventureImg;
+        //     img_is_selected = true;
+        //     speech.setVoice(1);
+        //     speech.setPitch(1.5);
+        //     speech.setRate(1.5);
+        //     speech.speak(story_text);
+        // }
+        // else if(story_style === "Comedy"){
+        //     slectedImg = comedyImg;
+        //     img_is_selected = true;
+        //     speech.setVoice(2);
+        //     speech.setPitch(2);
+        //     speech.setRate(1);
+        //     speech.speak(story_text);
+        // }
+        // else if(story_style === "Mystery"){
+        //     slectedImg = mysteryImg;
+        //     img_is_selected = true;
+        //     speech.setVoice(0);
+        //     speech.setPitch(2);
+        //     speech.setRate(1);
+        //     speech.speak(story_text);
+        // }
+        // else if(story_style === "Romance"){
+        //     slectedImg = romanceImg;
+        //     img_is_selected = true;
+        //     speech.setVoice(2);
+        //     speech.setPitch(1);
+        //     speech.setRate(1);
+        //     speech.speak(story_text);
+        // }
+        // else{
+        //     speech.setVoice(0);
+        //     speech.setPitch(1.0);
+        //     speech.setRate(1.0);
+        //     speech.speak(story_text);
 
-        if(story_style === "Horror"){
-            slectedImg = horrorImg;
-            img_is_selected = true;
-            speech.setVoice(0);
-            speech.setPitch(0.01);
-            speech.setRate(0.5);
-            speech.speak(story_text);
-        }
-        else if(story_style === "Fantasy"){
-            slectedImg = fantasyImg;
-            img_is_selected = true;
-            speech.setVoice(1);
-            speech.setPitch(1);
-            speech.setRate(1);
-            speech.speak(story_text);
-        }
-        else if(story_style === "Adventure"){
-            slectedImg = adventureImg;
-            img_is_selected = true;
-            speech.setVoice(1);
-            speech.setPitch(1.5);
-            speech.setRate(1.5);
-            speech.speak(story_text);
-        }
-        else if(story_style === "Comedy"){
-            slectedImg = comedyImg;
-            img_is_selected = true;
-            speech.setVoice(2);
-            speech.setPitch(2);
-            speech.setRate(1);
-            speech.speak(story_text);
-        }
-        else if(story_style === "Mystery"){
-            slectedImg = mysteryImg;
-            img_is_selected = true;
-            speech.setVoice(0);
-            speech.setPitch(2);
-            speech.setRate(1);
-            speech.speak(story_text);
-        }
-        else if(story_style === "Romance"){
-            slectedImg = romanceImg;
-            img_is_selected = true;
-            speech.setVoice(2);
-            speech.setPitch(1);
-            speech.setRate(1);
-            speech.speak(story_text);
-        }
-        else{
-            speech.setVoice(0);
-            speech.setPitch(1.0);
-            speech.setRate(1.0);
-            speech.speak(story_text);
-
-        }
+        // }
 
         // speech.listVoices();
         
     }
 }
+
+
+
 
 function stopSpeaking(){
     speech.stop();

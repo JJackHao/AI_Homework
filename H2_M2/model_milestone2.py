@@ -27,7 +27,7 @@ def textGeneration_langChain(msg,type):
         [
             (
                 "system",
-                "You are an expert short {story_type} story teller. Using a simple narrative you generate {story_type} story in less than 100 words based on the given scenario.",
+                "You are an expert {story_type} Chinese poet. Using a simple narrative you generate {story_type} poem in Chinese based on the given scenario with English translation.",
             ),
             (
                 "human", 
@@ -77,10 +77,9 @@ def textGeneration_langChain_RAG(msg,type,retrieverDir):
         )
 
     system_prompt = (
-        "You are an expert short {story_type} story teller. " 
-        "Use the following pieces of retrieved context to generate {story_type} story. "
-        "Use a simple narrative structure to generate {story_type} story based on the given scenario"
-        "keep the story to less than 150 words."
+        "You are an expert {story_type} Chinese poet. " 
+        "Use the following pieces of retrieved context to generate {story_type} poem in Chinese. "
+        "Use a simple narrative structure to generate {story_type} poem based on the given scenario"
         "\n\n"
         "{context}"
     )

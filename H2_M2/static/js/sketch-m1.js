@@ -41,7 +41,7 @@ function draw(){
 
 
 function startSpeaking(){
-    if(story_text !== "Waiting for the story..."){
+    if(story_text !== "Waiting for the poem..."){
         speech.speak(story_text);
     }
 }
