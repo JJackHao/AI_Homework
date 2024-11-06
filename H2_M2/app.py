@@ -47,12 +47,13 @@ def interaction_2():
         img_path = 'imgs/'+file_name
         f.save(upld_path)
 
-        # db_dir = os.path.join(cwd,"chroma_db")
+        db_dir = os.path.join(cwd,"chroma_db")
 
         story_style = request.form.get('storyRadioOptions')
         # print(f"the story style selcted is {story_style}")
 
-        (caption, story) = runModels_langchain(upld_path,story_style)
+        # (caption, story) = runModels_langchain(upld_path,story_style)
+        (caption, story) = runModels_langchain_RAG(upld_path,story_style,db_dir)
         poem1 = story
         poem2 = "哦哦哦哦哦哦哦。"
 
@@ -64,11 +65,6 @@ def interaction_2():
 
         tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-chinese")
         model = AutoModelForMaskedLM.from_pretrained("google-bert/bert-base-chinese")
-
-
-        # (caption, story) = runModels_langchain_RAG(upld_path,story_style,db_dir)
-
-        
 
         return render_template('milestone2.html', active='interaction_2', imgPath=img_path, story=story, caption=caption, style=story_style)
     else:

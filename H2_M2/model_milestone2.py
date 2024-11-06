@@ -114,7 +114,7 @@ def textGeneration_langChain_RAG(msg,type,retrieverDir):
     system_prompt = (
         "You are an expert {story_type} Chinese poet. " 
         "Use the following pieces of retrieved context to generate {story_type} poem in Chinese with English translation. "
-        "Generate {story_type} poem based on the given scenario"
+        "Using a simple description of a picture as the imagery in the poem, you generate {story_type} poem"
         "\n\n"
         "{context}"
     )
