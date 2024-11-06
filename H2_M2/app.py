@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
 from model_milestone1 import runModels
-from model_milestone2 import runModels_langchain, runModels_langchain_RAG
+from model_milestone2 import runModels_langchain, runModels_langchain_RAG, get_poem_vector, find_closest_word
 
 import os
 from werkzeug.utils import secure_filename
+
+# Load model directly
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+import torch
+import numpy as np
 
 load_dotenv()
 
@@ -48,6 +53,19 @@ def interaction_2():
         # print(f"the story style selcted is {story_style}")
 
         (caption, story) = runModels_langchain(upld_path,story_style)
+        poem1 = story
+        poem2 = "哦哦哦哦哦哦哦。"
+
+        poem_vector1 = get_poem_vector(poem1)
+        poem_vector2 = get_poem_vector(poem2)
+
+        combined_vector = poem_vector1 + poem_vector2
+        combined_vector_np = combined_vector.numpy()
+
+        tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-chinese")
+        model = AutoModelForMaskedLM.from_pretrained("google-bert/bert-base-chinese")
+
+
         # (caption, story) = runModels_langchain_RAG(upld_path,story_style,db_dir)
 
         

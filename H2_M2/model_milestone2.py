@@ -5,6 +5,41 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+import torch
+import numpy as np
+
+
+tokenizer = AutoTokenizer.from_pretrained("google-bert/bert-base-chinese")
+model = AutoModelForMaskedLM.from_pretrained("google-bert/bert-base-chinese")
+
+def get_poem_vector(poem):
+    inputs = tokenizer(poem, return_tensors="pt")
+    with torch.no_grad():
+        outputs = model(**inputs).logits
+    # Average the token embeddings to get a single vector for the poem
+    poem_vector = outputs.mean(dim=1)
+    return poem_vector
+
+def find_closest_word(target_vector, tokenizer, model):
+    vocab = tokenizer.get_vocab()
+    closest_word = None
+    min_distance = float("inf")
+    
+    for word, idx in vocab.items():
+        inputs = tokenizer(word, return_tensors="pt")
+        with torch.no_grad():
+            word_vector = model(**inputs).logits.mean(dim=1).numpy()
+        
+        distance = np.linalg.norm(target_vector - word_vector)
+        
+        if distance < min_distance:
+            min_distance = distance
+            closest_word = word
+    
+    return closest_word
+
+
 def img2text(url):
     img_to_text_pipe = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
     text = img_to_text_pipe(url)[0]["generated_text"]
@@ -27,7 +62,7 @@ def textGeneration_langChain(msg,type):
         [
             (
                 "system",
-                "You are an expert {story_type} Chinese poet. Using a simple narrative you generate {story_type} poem in Chinese based on the given scenario with English translation.",
+                "You are an expert {story_type} Chinese poet. Using a simple description of a picture as the imagery in the poem, you generate {story_type} poem in Chinese with English translation to express your feelings.",
             ),
             (
                 "human", 
@@ -78,8 +113,8 @@ def textGeneration_langChain_RAG(msg,type,retrieverDir):
 
     system_prompt = (
         "You are an expert {story_type} Chinese poet. " 
-        "Use the following pieces of retrieved context to generate {story_type} poem in Chinese. "
-        "Use a simple narrative structure to generate {story_type} poem based on the given scenario"
+        "Use the following pieces of retrieved context to generate {story_type} poem in Chinese with English translation. "
+        "Generate {story_type} poem based on the given scenario"
         "\n\n"
         "{context}"
     )
