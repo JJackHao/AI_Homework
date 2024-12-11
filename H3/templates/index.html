@@ -3,55 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capture and Record</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+    <title>Emotion Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+
+        }
+        #canvas-container {
+            margin: 20px auto;
+        }
+        canvas {
+            border: 2px solid black;
+        }
+        video {
+            display: none; /* Keep the camera feed hidden */
+        }
+    </style>
 </head>
 <body>
-    <h1>Capture Image and Record Audio</h1>
+    <h1>Emotion Analysis App</h1>
+    <button id="capture">Capture Image</button>
+    <button id="startRecording">Start Recording</button>
+    <button id="stopRecording" disabled>Stop Recording</button>
+    <form id="dataForm" enctype="multipart/form-data">
+        <button type="submit">Analyze</button>
+    </form>
+    <div id="canvas-container">
+        <canvas id="resultCanvas"></canvas>
+    </div>
 
-    <!-- Video Stream -->
-    <video id="video" autoplay playsinline width="640" height="480"></video>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-
-    <!-- Buttons -->
-    <button id="capture">Capture</button>
-    <button id="start">Start Recording</button>
-    <button id="stop" disabled>Stop Recording</button>
+    <video id="video" autoplay></video>
 
     <script>
-        // Video capture setup
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
+        const canvas = document.getElementById('resultCanvas');
         const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 400;
 
+        const video = document.getElementById('video');
+        let capturedImageBlob = null;
+        let audioChunks = [];
+        let mediaRecorder = null;
+        let recordedAudioBlob = null;
+
+        // Camera setup
         navigator.mediaDevices.getUserMedia({ video: true })
             .then((stream) => {
                 video.srcObject = stream;
             });
 
-        // Capture button
         document.getElementById('capture').addEventListener('click', () => {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob((blob) => {
-                const formData = new FormData();
-                formData.append('image', blob, 'capture.png');
+            const captureCanvas = document.createElement('canvas');
+            captureCanvas.width = video.videoWidth;
+            captureCanvas.height = video.videoHeight;
+            const captureCtx = captureCanvas.getContext('2d');
 
-                fetch('/upload-image', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => {
-                    alert('Image saved!');
-                }).catch(error => {
-                    console.error('Error uploading image:', error);
-                });
-            });
+            captureCtx.drawImage(video, 0, 0, captureCanvas.width, captureCanvas.height);
+            captureCanvas.toBlob((blob) => {
+                capturedImageBlob = blob;
+                alert('Image captured!');
+            }, 'image/png');
+
+            
         });
 
-        // Audio recording setup
-        let mediaRecorder;
-        let audioChunks = [];
-
-        document.getElementById('start').addEventListener('click', () => {
+        document.getElementById('startRecording').addEventListener('click', () => {
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then((stream) => {
                     mediaRecorder = new MediaRecorder(stream);
@@ -61,32 +81,149 @@
                     };
 
                     mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         audioChunks = [];
 
-                        const formData = new FormData();
-                        formData.append('audio', audioBlob, 'recording.wav');
-
-                        fetch('/upload-audio', {
-                            method: 'POST',
-                            body: formData
-                        }).then(response => {
-                            alert('Audio saved!');
+                        // Convert WebM to WAV
+                        convertWebMToWAV(audioBlob).then(wavBlob => {
+                            recordedAudioBlob = wavBlob;
+                            alert('Audio recording saved as WAV!');
                         }).catch(error => {
-                            console.error('Error uploading audio:', error);
+                            console.error('Error converting to WAV:', error);
                         });
                     };
 
                     mediaRecorder.start();
-                    document.getElementById('start').disabled = true;
-                    document.getElementById('stop').disabled = false;
+                    document.getElementById('startRecording').disabled = true;
+                    document.getElementById('stopRecording').disabled = false;
                 });
         });
 
-        document.getElementById('stop').addEventListener('click', () => {
-            mediaRecorder.stop();
-            document.getElementById('start').disabled = false;
-            document.getElementById('stop').disabled = true;
+        document.getElementById('stopRecording').addEventListener('click', () => {
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+                document.getElementById('startRecording').disabled = false;
+                document.getElementById('stopRecording').disabled = true;
+            }
+        });
+
+        function convertWebMToWAV(webmBlob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioContext.decodeAudioData(reader.result)
+                        .then(buffer => {
+                            const wavBlob = bufferToWave(buffer);
+                            resolve(wavBlob);
+                        })
+                        .catch(error => reject(error));
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(webmBlob);
+            });
+        }
+
+        function bufferToWave(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const length = buffer.length * numChannels * 2 + 44;
+            const arrayBuffer = new ArrayBuffer(length);
+            const view = new DataView(arrayBuffer);
+
+            writeUTFBytes(view, 0, 'RIFF');
+            view.setUint32(4, length - 8, true);
+            writeUTFBytes(view, 8, 'WAVE');
+            writeUTFBytes(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, buffer.sampleRate, true);
+            view.setUint32(28, buffer.sampleRate * numChannels * 2, true);
+            view.setUint16(32, numChannels * 2, true);
+            view.setUint16(34, 16, true);
+            writeUTFBytes(view, 36, 'data');
+            view.setUint32(40, length - 44, true);
+
+            const channelData = [];
+            for (let i = 0; i < numChannels; i++) {
+                channelData.push(buffer.getChannelData(i));
+            }
+            let offset = 44;
+            for (let i = 0; i < buffer.length; i++) {
+                for (let j = 0; j < numChannels; j++) {
+                    const sample = Math.max(-1, Math.min(1, channelData[j][i]));
+                    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                    offset += 2;
+                }
+            }
+
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+        }
+
+        function writeUTFBytes(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], x, y);
+                y += lineHeight;
+            }
+        }
+
+        function displayResult(responseText) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "black";
+
+            const maxWidth = canvas.width - 50;
+            const lineHeight = 30;
+            const x = 25;
+            const y = 50;
+
+            wrapText(ctx, "Generated Response: " + responseText, x, y, maxWidth, lineHeight);
+        }
+
+        $('#dataForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            if (capturedImageBlob) {
+                formData.append('image', capturedImageBlob, 'capture.png');
+            }
+            if (recordedAudioBlob) {
+                formData.append('audio', recordedAudioBlob, 'recording.wav');
+            }
+
+            fetch('/process-data', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    displayResult(data.response || "No response generated.");
+                })
+                .catch(error => console.error('Error:', error));
         });
     </script>
 </body>
